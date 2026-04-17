@@ -41,3 +41,27 @@ def env_to_dict(env_content: str) -> dict[str, str]:
 def dict_to_env(data: dict[str, str]) -> str:
     """Serialize a key/value dictionary back to .env format."""
     return "\n".join(f"{k}={v}" for k, v in data.items()) + "\n"
+
+
+def merge_profiles(
+    base: dict[str, str],
+    override: dict[str, str],
+    overwrite: bool = True,
+) -> dict[str, str]:
+    """Merge two env dictionaries together.
+
+    Args:
+        base: The starting set of key/value pairs.
+        override: Key/value pairs to merge into *base*.
+        overwrite: If ``True`` (default), keys present in both dictionaries
+            take the value from *override*.  If ``False``, existing keys in
+            *base* are left unchanged.
+
+    Returns:
+        A new dictionary containing the merged result.
+    """
+    merged = dict(base)
+    for key, value in override.items():
+        if overwrite or key not in merged:
+            merged[key] = value
+    return merged
