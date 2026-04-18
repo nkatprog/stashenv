@@ -68,6 +68,23 @@ def delete(profile, project):
         raise SystemExit(1)
 
 
+@cli.command("show")
+@click.argument("profile")
+@click.option("--project", default=".", show_default=True)
+@click.option("--password", prompt=True, hide_input=True)
+def show(profile, project, password):
+    """Decrypt and print PROFILE contents to stdout."""
+    try:
+        data = load_profile(Path(project).resolve(), profile, password)
+        click.echo(data.decode())
+    except FileNotFoundError:
+        click.echo(f"Error: profile '{profile}' not found.", err=True)
+        raise SystemExit(1)
+    except Exception:
+        click.echo("Error: decryption failed. Wrong password?", err=True)
+        raise SystemExit(1)
+
+
 cli.add_command(export_cmd)
 cli.add_command(import_cmd)
 cli.add_command(copy_cmd)
