@@ -29,6 +29,15 @@ def test_set_alias_nonexistent_profile(runner, project_dir):
     assert result.exit_code != 0
 
 
+def test_set_alias_overwrites_existing(runner, project_dir):
+    runner.invoke(alias_cmd, ["set", "prod", "production", "--project", str(project_dir)])
+    result = runner.invoke(alias_cmd, ["set", "prod", "staging", "--project", str(project_dir)])
+    assert result.exit_code == 0
+    resolve_result = runner.invoke(alias_cmd, ["resolve", "prod", "--project", str(project_dir)])
+    assert "staging" in resolve_result.output
+    assert "production" not in resolve_result.output
+
+
 def test_list_aliases(runner, project_dir):
     runner.invoke(alias_cmd, ["set", "prod", "production", "--project", str(project_dir)])
     runner.invoke(alias_cmd, ["set", "stg", "staging", "--project", str(project_dir)])
@@ -50,6 +59,11 @@ def test_remove_alias(runner, project_dir):
     assert result.exit_code == 0
     list_result = runner.invoke(alias_cmd, ["list", "--project", str(project_dir)])
     assert "prod" not in list_result.output
+
+
+def test_remove_nonexistent_alias(runner, project_dir):
+    result = runner.invoke(alias_cmd, ["remove", "ghost", "--project", str(project_dir)])
+    assert result.exit_code != 0
 
 
 def test_resolve_alias(runner, project_dir):
