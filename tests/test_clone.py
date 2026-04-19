@@ -39,6 +39,16 @@ def test_clone_with_new_password(project_dir):
     assert "HOST=localhost" in result
 
 
+def test_clone_with_new_password_old_password_fails(project_dir):
+    """Ensure the old password cannot decrypt a profile cloned with a new password."""
+    src = project_dir / "src"
+    dst = project_dir / "dst"
+    _save(src, "staging", "HOST=localhost\n")
+    clone_profile(src, "staging", dst, "staging", "pass", dst_password="newpass")
+    with pytest.raises(Exception):
+        load_profile(dst, "staging", "pass")
+
+
 def test_clone_nonexistent_raises(project_dir):
     src = project_dir / "src"
     dst = project_dir / "dst"
