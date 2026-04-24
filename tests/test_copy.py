@@ -55,3 +55,11 @@ def test_rename_to_existing_raises(project_dir):
 def test_copy_nonexistent_raises(project_dir):
     with pytest.raises(FileNotFoundError):
         copy_profile(project_dir, "ghost", project_dir, "copy", PASSWORD)
+
+
+def test_copy_to_existing_raises(project_dir):
+    """Copying to a destination profile that already exists should raise FileExistsError."""
+    save_profile(project_dir, "src", DATA, PASSWORD)
+    save_profile(project_dir, "dst", DATA, PASSWORD)
+    with pytest.raises(FileExistsError):
+        copy_profile(project_dir, "src", project_dir, "dst", PASSWORD)
