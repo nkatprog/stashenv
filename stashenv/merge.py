@@ -45,6 +45,30 @@ def _merge_dicts(
     return merged
 
 
+def list_conflicts(
+    project_dir: str,
+    base_profile: str,
+    override_profile: str,
+    password: str,
+) -> list[str]:
+    """Return a sorted list of keys that conflict between two profiles.
+
+    Useful for inspecting potential merge conflicts before committing to a
+    merge strategy.
+
+    Parameters
+    ----------
+    project_dir:      directory that owns both source profiles
+    base_profile:     name of the base profile
+    override_profile: name of the profile to compare against
+    password:         decryption password for both source profiles
+    """
+    base_data = load_profile(project_dir, base_profile, password)
+    override_data = load_profile(project_dir, override_profile, password)
+    conflicts = set(base_data.keys()) & set(override_data.keys())
+    return sorted(conflicts)
+
+
 def merge_profiles(
     project_dir: str,
     base_profile: str,
