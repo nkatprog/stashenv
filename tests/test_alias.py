@@ -59,3 +59,14 @@ def test_overwrite_alias(project_dir):
 
 def test_list_aliases_empty(project_dir):
     assert list_aliases(project_dir) == {}
+
+
+def test_multiple_aliases_can_point_to_same_profile(project_dir):
+    """Multiple alias names may resolve to the same underlying profile."""
+    _save(project_dir, "production")
+    set_alias(project_dir, "prod", "production")
+    set_alias(project_dir, "prd", "production")
+    aliases = list_aliases(project_dir)
+    assert aliases["prod"] == "production"
+    assert aliases["prd"] == "production"
+    assert resolve_alias(project_dir, "prod") == resolve_alias(project_dir, "prd")
